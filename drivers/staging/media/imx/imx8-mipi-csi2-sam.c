@@ -1500,11 +1500,11 @@ static irqreturn_t mipi_csis_irq_handler(int irq, void *dev_id)
 			if (!(status & state->events[i].mask))
 				continue;
 			state->events[i].counter++;
-			v4l2_dbg(2, debug, &state->sd, "%s: %d\n",
+			/*v4l2_dbg(2, debug, &state->sd, "%s: %d\n",
 				 state->events[i].name,
-				 state->events[i].counter);
+				 state->events[i].counter);*/
 		}
-		v4l2_dbg(2, debug, &state->sd, "status: %08x\n", status);
+		// v4l2_dbg(2, debug, &state->sd, "status: %08x\n", status);
 	}
 	spin_unlock_irqrestore(&state->slock, flags);
 
@@ -1850,12 +1850,16 @@ static struct mipi_csis_pdata mipi_csis_imx8mp_pdata = {
 
 static int mipi_csis_probe(struct platform_device *pdev)
 {
+	printk("[%s] call", __func__);
+
 	struct device *dev = &pdev->dev;
 	struct v4l2_subdev *mipi_sd;
 	struct resource *mem_res;
 	struct csi_state *state;
 	const struct of_device_id *of_id;
 	int ret = -ENOMEM;
+
+	debug = 2;
 
 	state = devm_kzalloc(dev, sizeof(*state), GFP_KERNEL);
 	if (!state)

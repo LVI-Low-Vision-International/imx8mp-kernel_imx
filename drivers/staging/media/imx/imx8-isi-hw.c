@@ -158,6 +158,8 @@ static void chain_buf(struct mxc_isi_dev *mxc_isi, struct mxc_isi_frame *frm)
 		val = readl(mxc_isi->regs + CHNL_CTRL);
 		val &= ~CHNL_CTRL_CHAIN_BUF_MASK;
 		writel(val, mxc_isi->regs + CHNL_CTRL);
+		if (mxc_isi->chain)
+			regmap_write(mxc_isi->chain, CHNL_CTRL, 0x0);
 		mxc_isi->chain_buf = 0;
 	}
 }
@@ -550,8 +552,8 @@ void mxc_isi_channel_set_scaling(struct mxc_isi_dev *mxc_isi,
 		}
 		xscale = src_f->width * 0x1000 / (dst_f->width * decx);
 	} else {
-		/* Up  */
-		xscale = src_f->width * 0x1000 / dst_f->width;
+		/* Up: use inverse ratio so factor is > 1.0 in Q12 */
+		xscale = dst_f->width * 0x1000 / src_f->width;
 	}
 
 	if (decy > 1) {
@@ -567,7 +569,7 @@ void mxc_isi_channel_set_scaling(struct mxc_isi_dev *mxc_isi,
 		}
 		yscale = src_f->height * 0x1000 / (dst_f->height * decy);
 	} else {
-		yscale = src_f->height * 0x1000 / dst_f->height;
+		yscale = dst_f->height * 0x1000 / src_f->height;
 	}
 
 	val0 = readl(mxc_isi->regs + CHNL_IMG_CTRL);

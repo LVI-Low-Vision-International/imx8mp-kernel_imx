@@ -108,7 +108,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mp-evk.dtb imx8mp-evk-rm67191.dtb imx8mp-evk-it626
 			  imx8mp-evk-usdhc1-m2.dtb imx8mp-evk-rm67199.dtb \
 			  imx8mp-evk-hifiberry-dacpp-m-rpmsg.dtb
 
-dtb-$(CONFIG_ARCH_MXC) += imx8mp-var-dart-dt8mcustomboard.dtb imx8mp-var-som-symphony-hdmi.dtb imx8mp-var-dart-dt8mcustomboard-legacy.dtb \
+dtb-$(CONFIG_ARCH_MXC) += imx8mp-var-dart-dt8mcustomboard.dtb imx8mp-var-dart-dt8mcustomboard-lvi.dtb imx8mp-var-som-symphony-hdmi.dtb imx8mp-var-dart-dt8mcustomboard-legacy.dtb \
                           imx8mp-var-som-symphony.dtb imx8mp-var-som-symphony-2nd-ov5640.dtb \
                           imx8mp-var-dart-dt8mcustomboard-m7.dtb imx8mp-var-dart-dt8mcustomboard-legacy-m7.dtb imx8mp-var-dart-dt8mcustomboard-legacy-hdmi.dtb \
                           imx8mp-var-som-symphony-m7.dtb imx8mp-var-som-symphony-2nd-ov5640-m7.dtb imx8mp-var-dart-dt8mcustomboard-hdmi.dtb \

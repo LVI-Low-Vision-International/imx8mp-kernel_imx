@@ -456,6 +456,12 @@ config BACKLIGHT_LED
 	  If you have a LCD backlight adjustable by LED class driver, say Y
 	  to enable this driver.
 
+config BACKLIGHT_NCS8801S
+	tristate "NewCoSemi LVDS to eDP converter"
+    depends on GPIO_LVIGPIO
+	help
+	  Used for converting LVDS to eDP.
+
 endif # BACKLIGHT_CLASS_DEVICE
 
 endmenu

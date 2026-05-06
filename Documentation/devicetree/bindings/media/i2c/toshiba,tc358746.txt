@@ -1,0 +1,95 @@
+Toshiba TC358746 Parallel to MIPI CSI2-TX or MIPI CSI2-RX to Parallel Bridge
+============================================================================
+
+The Toshiba TC358746 converts a parallel into a MIPI CSI-2 stream. The direction
+can be either parallel-in -> csi-out e.g. to connect a parallel camera to a
+MIPI CSI-2 host or csi-in -> parallel-out e.g. to connect a parallel display to
+a MIPI CSI-2 host. It's programmable trough I2C and SPI. The SPI interface is
+only supported in parallel-in -> csi-out mode.
+
+Required properties
+-------------------
+
+- compatible		: Shall be "toshiba,tc358746"
+- reg			: Shall be <0x0e>
+- clocks		: Phandle to the reference clock source
+
+Optional properties
+-------------------
+
+- reset-gpios		: Phandle to the GPIO connected to the reset input pin
+
+Port nodes (required)
+=====================
+
+The device node must contain two ports children nodes which should be grouped
+within a 'ports' node. The first port describes the input connection, the second
+one describes the output one. Each port shall contain one endpoint subnode that
+connects to a remote device and specifies the bus type of the input and output
+ports. Only one endpoint per port shall be present.
+
+More documentation on these bindings is available in [1].
+
+reg			: The interface:
+			  0 - Input, either parallel or MIPI CSI-2
+			  1 - Output, either parallel or MIPI CSI-2
+
+Endpoint nodes (required)
+=========================
+
+Required properties
+-------------------
+
+- bus-width		: Look at [1] for more information (Parallel endpoint)
+- data-lanes		: Look at [1] for more information (CSI-2 endpoint)
+- link-frequencies	: Array of frequencies the driver can choose to
+			  full-fill the parallel timings calculation. Look at
+			  [1] for more information (CSI-2 endpoint)
+
+Optional properties
+-------------------
+
+- bus-type		: Look at [1] for more information
+- clock-noncontinuous	: Look at [1] for more information (CSI-2 endpoint)
+
+[1] Documentation/devicetree/bindings/media/video-interfaces.txt
+
+Example
+=======
+
+&i2c {
+	csi-bridge@0e {
+		reg = <0x0e>;
+		compatible = "toshiba,tc358746";
+		pinctrl-names = "default";
+		clocks = <&clk_cam_ref>;
+		reset-gpios = <&gpio3 2 GPIO_ACTIVE_LOW>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			/* Input */
+			port@0 {
+				reg = <0>;
+
+				tc358746_parallel_in: endpoint {
+					bus-width = <8>;
+					remote-endpoint = <&micron_parallel_out>;
+				};
+			};
+
+			/* Output */
+			port@1 {
+				reg = <1>;
+
+				tc358746_mipi2_out: endpoint {
+					remote-endpoint = <&mipi_csi2_in>;
+					data-lanes = <1 2>;
+					clock-noncontinuous;
+					link-frequencies = /bits/ 64 <216000000>;
+				};
+			};
+		};
+	};
+};

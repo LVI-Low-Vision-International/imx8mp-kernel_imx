@@ -5,6 +5,8 @@
 
 # Each configuration option enables a list of files.
 
+ccflags-y += -I$(srctree)/lib
+
 obj-$(CONFIG_INPUT_88PM860X_ONKEY)	+= 88pm860x_onkey.o
 obj-$(CONFIG_INPUT_88PM80X_ONKEY)	+= 88pm80x_onkey.o
 obj-$(CONFIG_INPUT_AB8500_PONKEY)	+= ab8500-ponkey.o
@@ -88,3 +90,7 @@ obj-$(CONFIG_INPUT_MPL3115)		+= mpl3115.o
 obj-$(CONFIG_SENSOR_FXLS8471)       	+= fxls8471.o fxls8471_i2c.o
 obj-$(CONFIG_INPUT_ISL29023)            += isl29023.o
 obj-$(CONFIG_SENSOR_IMX_RPMSG)		+= rpmsg_input.o
+obj-$(CONFIG_INPUT_LVI_PANEL)		+= lvipanel.o
+obj-$(CONFIG_INPUT_LVICONFIG_CTRL)		+= lviconfig_ctrl.o
+obj-$(CONFIG_INPUT_LVI_KEYBOARD)		+= lvi_keyboard.o
+obj-$(CONFIG_INPUT_LVI_TEST)		+= lvitest.o

@@ -2,6 +2,8 @@ config IMX_LCDIFV3_CORE
 	tristate "i.MX LCDIFV3 core support"
 	depends on ARCH_MXC
 	depends on DRM && OF
+	depends on LVICONFIG_PARAMETERS_LIB
+	depends on INPUT_LVICONFIG_CTRL
 	select RESET_CONTROLLER
 	help
 	  Choose this if you have a NXP i.MX8MP platform and want to use the

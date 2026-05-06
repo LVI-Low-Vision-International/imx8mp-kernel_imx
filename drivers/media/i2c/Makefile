@@ -1,4 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0
+
+ccflags-y += -I$(srctree)/lib
+
 msp3400-objs	:=	msp3400-driver.o msp3400-kthreads.o
 obj-$(CONFIG_VIDEO_MSP3400) += msp3400.o
 
@@ -111,6 +114,9 @@ obj-$(CONFIG_VIDEO_I2C)		+= video-i2c.o
 obj-$(CONFIG_VIDEO_ML86V7667)	+= ml86v7667.o
 obj-$(CONFIG_VIDEO_OV2659)	+= ov2659.o
 obj-$(CONFIG_VIDEO_TC358743)	+= tc358743.o
+obj-$(CONFIG_VIDEO_TC358746)	+= tc358746.o
+obj-$(CONFIG_VIDEO_LVICAM)	+= lvicam.o
+obj-$(CONFIG_VIDEO_LT6911UXC)	+= lt6911uxc.o
 obj-$(CONFIG_VIDEO_HI556)	+= hi556.o
 obj-$(CONFIG_VIDEO_IMX214)	+= imx214.o
 obj-$(CONFIG_VIDEO_IMX219)	+= imx219.o

@@ -261,6 +261,8 @@ static int mxc_md_clean_channel(struct mxc_md *mxc_md, int index)
 
 static int mxc_md_clean_unlink_channels(struct mxc_md *mxc_md)
 {
+	printk("[%s] call : lvicam", __func__);
+
 	struct mxc_sensor_info *sensor;
 	int num_subdevs = mxc_md->num_sensors;
 	int i, ret;
@@ -282,6 +284,8 @@ static int mxc_md_clean_unlink_channels(struct mxc_md *mxc_md)
 
 static void mxc_md_unregister_all(struct mxc_md *mxc_md)
 {
+	printk("[%s] call : lvicam", __func__);
+
 	struct mxc_isi_info *mxc_isi;
 	int i;
 
@@ -311,6 +315,7 @@ static int mxc_md_create_links(struct mxc_md *mxc_md)
 	u32 flags;
 	u32 mipi_vc = 0;
 
+	printk("lvicam %s",__func__);
 	/* Create links between each ISI's subdev and video node */
 	flags = MEDIA_LNK_FL_ENABLED;
 	for (i = 0; i < MXC_ISI_MAX_DEVS; i++) {
@@ -319,6 +324,7 @@ static int mxc_md_create_links(struct mxc_md *mxc_md)
 			continue;
 
 		/* Connect ISI source to video device */
+		printk("lvicam: %s %s", mxc_isi->sd_name, mxc_isi->vdev_name);
 		source = find_entity_by_name(mxc_md, mxc_isi->sd_name);
 		sink = find_entity_by_name(mxc_md, mxc_isi->vdev_name);
 		sink_pad = 0;
@@ -474,6 +480,7 @@ static int mxc_md_create_links(struct mxc_md *mxc_md)
 
 	/* Connect MIPI Sensor to MIPI CSI2 */
 	for (i = 0; i < num_sensors; i++) {
+		printk("lvicam: num_sensors %d", num_sensors);
 		sensor = &mxc_md->sensor[i];
 		if (!sensor || !sensor->sd)
 			continue;
@@ -519,6 +526,7 @@ static int mxc_md_create_links(struct mxc_md *mxc_md)
 
 			source = &sensor->sd->entity;
 			sink = find_entity_by_name(mxc_md, mipi_csi2->sd_name);
+			printk("lvicam csi2: %s", mipi_csi2->sd_name);
 			source_pad = 0;
 			sink_pad = source_pad;
 
@@ -530,6 +538,7 @@ static int mxc_md_create_links(struct mxc_md *mxc_md)
 							    sink_pad + j,
 							    MEDIA_LNK_FL_IMMUTABLE |
 							    MEDIA_LNK_FL_ENABLED);
+								printk("lvicam: %s @ %d ret : %d",__func__, __LINE__, ret);
 				if (ret)
 					return ret;
 
@@ -538,6 +547,7 @@ static int mxc_md_create_links(struct mxc_md *mxc_md)
 							&sink->pads[sink_pad + j],
 							&source->pads[source_pad + j],
 							0);
+							printk("lvicam: %s @ %d ret : %d",__func__, __LINE__, ret);
 				if (ret)
 					return ret;
 
@@ -562,6 +572,8 @@ static int subdev_notifier_bound(struct v4l2_async_notifier *notifier,
 				 struct v4l2_subdev *sd,
 				 struct v4l2_async_subdev *asd)
 {
+	printk("[%s] call : lvicam", __func__);
+
 	struct mxc_md *mxc_md = notifier_to_mxc_md(notifier);
 	struct mxc_sensor_info *sensor = NULL;
 	int i;
@@ -576,12 +588,17 @@ static int subdev_notifier_bound(struct v4l2_async_notifier *notifier,
 		}
 	}
 
-	if (!sensor)
+	if (!sensor) {
+		printk("[%s] call : lvicam : failed to register sensor", __func__);
+
 		return -EINVAL;
+	}
 
 	sd->grp_id = GRP_ID_MXC_SENSOR;
 	sensor->sd = sd;
 	mxc_md->valid_num_sensors++;
+
+	printk("[%s] call : lvicam : Registered sensor subdevice: %s (%d)", __func__, sd->name, mxc_md->valid_num_sensors);
 
 	v4l2_info(&mxc_md->v4l2_dev, "Registered sensor subdevice: %s (%d)\n",
 		  sd->name, mxc_md->valid_num_sensors);
@@ -591,6 +608,8 @@ static int subdev_notifier_bound(struct v4l2_async_notifier *notifier,
 
 static int subdev_notifier_complete(struct v4l2_async_notifier *notifier)
 {
+	printk("[%s] call : lvicam", __func__);
+
 	struct mxc_md *mxc_md = notifier_to_mxc_md(notifier);
 	int ret;
 
@@ -598,8 +617,11 @@ static int subdev_notifier_complete(struct v4l2_async_notifier *notifier)
 	mutex_lock(&mxc_md->media_dev.graph_mutex);
 
 	ret = mxc_md_create_links(mxc_md);
-	if (ret < 0)
+	if (ret < 0) {
+		printk("[%s] call : lvicam : mxc_md_create_links failed!", __func__);
+
 		goto unlock;
+	}
 
 	mxc_md->link_status = 1;
 
@@ -1045,6 +1067,8 @@ static int register_sensor_entities(struct mxc_md *mxc_md)
 
 static int mxc_md_probe(struct platform_device *pdev)
 {
+	printk("[%s] call : lvicam", __func__);
+	
 	struct device *dev = &pdev->dev;
 	struct device_node *nd = dev->of_node;
 	struct v4l2_device *v4l2_dev;
@@ -1076,6 +1100,8 @@ static int mxc_md_probe(struct platform_device *pdev)
 
 	ret = v4l2_device_register(dev, &mxc_md->v4l2_dev);
 	if (ret < 0) {
+		printk("[%s] call : lvicam : ERROR : Failed to register v4l2_device (%d)", __func__, ret);
+
 		v4l2_err(v4l2_dev, "Failed to register v4l2_device (%d)\n", ret);
 		goto clean_md;
 	}
@@ -1086,8 +1112,10 @@ static int mxc_md_probe(struct platform_device *pdev)
 		goto clean_v4l2;
 
 	ret = register_sensor_entities(mxc_md);
-	if (ret < 0)
+	if (ret < 0) {
+		printk("[%s] call : lvicam : ERROR : Failed to register sensor entities", __func__);
 		goto clean_ents;
+	}
 
 	if (mxc_md->num_sensors > 0) {
 		mxc_md->subdev_notifier.ops = &sd_async_notifier_ops;
@@ -1097,32 +1125,41 @@ static int mxc_md_probe(struct platform_device *pdev)
 		ret = v4l2_async_notifier_register(&mxc_md->v4l2_dev,
 						   &mxc_md->subdev_notifier);
 		if (ret < 0) {
+			printk("[%s] call : lvicam : ERROR : Sensor register failed", __func__);
 			dev_warn(&mxc_md->pdev->dev, "Sensor register failed\n");
 			return ret;
 		}
 
-		if (!mxc_md->link_status) {
-			if (mxc_md->valid_num_sensors > 0) {
-				ret = subdev_notifier_complete(&mxc_md->subdev_notifier);
-				if (ret < 0)
-					goto clean_ents;
+		// if (!mxc_md->link_status) {
+		// 	printk("[%s] call : lvicam : ERROR : link_status = failure", __func__);
 
-				mxc_md_clean_unlink_channels(mxc_md);
-			} else {
-				/* no sensors connected */
-				mxc_md_unregister_all(mxc_md);
-				v4l2_async_notifier_unregister(&mxc_md->subdev_notifier);
-			}
-		}
+		// 	if (mxc_md->valid_num_sensors > 0) {
+		// 		ret = subdev_notifier_complete(&mxc_md->subdev_notifier);
+
+		// 		if (ret < 0) {
+		// 			goto clean_ents;
+		// 		}
+
+		// 		mxc_md_clean_unlink_channels(mxc_md);
+		// 	} else {
+		// 		/* no sensors connected */
+		// 		printk("[%s] call : lvicam : ERROR : no sensors connected", __func__);
+		// 		mxc_md_unregister_all(mxc_md);
+		// 		v4l2_async_notifier_unregister(&mxc_md->subdev_notifier);
+		// 	}
+		// }
 	}
 
 	return 0;
 
 clean_ents:
+	printk("[%s] call : lvicam : ERROR : clean_ents", __func__);
 	mxc_md_unregister_entities(mxc_md);
 clean_v4l2:
+	printk("[%s] call : lvicam : ERROR : clean_v4l2", __func__);
 	v4l2_device_unregister(&mxc_md->v4l2_dev);
 clean_md:
+	printk("[%s] call : lvicam : ERROR : clean_md", __func__);
 	media_device_cleanup(&mxc_md->media_dev);
 	return ret;
 }

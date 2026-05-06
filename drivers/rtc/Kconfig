@@ -1962,4 +1962,10 @@ config RTC_DRV_WILCO_EC
 	  This can also be built as a module. If so, the module will
 	  be named "rtc_wilco_ec".
 
+config RTC_LVIRTC
+	tristate "LVI RTC (PCF85063TP)"
+	help
+      If you say yes here you will get support for the
+      NXP PCF85063TP I2C RTC chip.
+
 endif # RTC_CLASS

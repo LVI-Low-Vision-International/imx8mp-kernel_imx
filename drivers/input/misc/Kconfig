@@ -13,6 +13,30 @@ menuconfig INPUT_MISC
 
 if INPUT_MISC
 
+config INPUT_LVI_PANEL
+	tristate "LVI panel driver"
+	depends on NET
+	help
+	  This module provides support for LVI PANEL communication.
+
+config INPUT_LVICONFIG_CTRL
+	tristate "LVI config ctrl driver"
+	depends on NET && I2C
+	depends on LVICONFIG_PARAMETERS_LIB
+	help
+	  This module provides ctrl support for the LVI ctrl config.
+
+config INPUT_LVI_KEYBOARD
+	tristate "LVI keyboard driver"
+	depends on NET
+	help
+	  This module provides support for LVI KEYBOARD communication.
+
+config INPUT_LVI_TEST
+	tristate "LVI test driver"
+	help
+	  This is a test module.
+
 config INPUT_88PM860X_ONKEY
 	tristate "88PM860x ONKEY support"
 	depends on MFD_88PM860X

@@ -698,3 +698,9 @@ config GENERIC_LIB_UCMPDI2
 config PLDMFW
 	bool
 	default n
+
+config LVICONFIG_PARAMETERS_LIB
+    tristate "LVI Config Parameter Library"
+	default m
+    help
+      Generic library for LVI system configuration used across kernel components
